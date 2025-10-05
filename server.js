@@ -12,20 +12,15 @@ const app = express();
 
 
 const helmet = require('helmet');
-app.use(helmet({
-  frameguard: {
-    action: 'deny'
-  },
-  hidePoweredBy: {
-    setTo: 'PHP 7.4.3',
-  },
-  xssFilter: true,
-  noSniff: true,
-  ieNoOpen: true,
-}));
-const ninetyDaysInSeconds = 90*24*60*60;
-app.use(helmet.hsts({ maxAge: ninetyDaysInSeconds, force: true }));
+app.use(helmet());
+
+app.use(helmet.xssFilter());
+app.use(helmet.noSniff());
 app.use(helmet.noCache());
+app.use((req, res, next) => {
+  res.setHeader('X-Powered-By', 'PHP 7.4.3');
+  next();
+});
 
 
 app.use('/public', express.static(process.cwd() + '/public'));
